@@ -6,6 +6,15 @@ from apple import Apple
 from Level import Level
 from Game_over import GameOver
 from Buttons import Button
+import csv
+
+#open file 
+with open("table_of_records.csv", "r") as f:
+    reader = csv.DictReader(f)
+    record = int(list(reader)[0]["Record"])
+
+
+
 
 # Data for display
 SPACE_FOR_EXTRA_INFORMATION = 103
@@ -24,12 +33,12 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
+GREY = (138, 128, 128)
 
 #"One pixel" of our game
 SIZE_OF_SQUARE = 20
 
 
-record = 0
 
 def game():
     
@@ -37,6 +46,9 @@ def game():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH_DISPLAY, HEIGHT_DISPLAY))
     pygame.display.set_caption("Snake")
+
+    background = pygame.image.load("Background.png")
+    background_rect = background.get_rect(topleft=(0, 0))
 
     clock = pygame.time.Clock()
 
@@ -51,8 +63,8 @@ def game():
 
 
     #game's objects
-    snake = Snake(screen, RED, SIZE_OF_SQUARE, WIDTH, HEIGHT, speed) 
-    apple = Apple(screen, GREEN, WIDTH, HEIGHT, SIZE_OF_SQUARE, snake)
+    snake = Snake(screen, SIZE_OF_SQUARE, WIDTH, HEIGHT, speed) 
+    apple = Apple(screen, RED, WIDTH, HEIGHT, SIZE_OF_SQUARE, snake)
 
     #our scores and level
     level = Level(screen, BLACK, speed_of_the_game, SPACE_FOR_EXTRA_INFORMATION, WIDTH, HEIGHT)
@@ -77,12 +89,7 @@ def game():
                 game() #for restarting
 
         screen.fill(WHITE)
-
-        #record
-        text_record = pygame.font.SysFont("Verdana", 15).render(f"Record: {record}", True, BLACK)
-        text_record_rect = text_record.get_rect(topleft=(WIDTH+SPACE_FOR_EXTRA_INFORMATION//12, HEIGHT//15 + 25 + 25))
-        screen.blit(text_record, text_record_rect) 
-
+        screen.blit(background, background_rect)
 
 
         if not end_of_the_game:
@@ -95,12 +102,17 @@ def game():
             apple.respawn(snake)
             speed_of_the_game=level.level_up() 
             
-        level.draw()
         
 
         #boundary
-
+        pygame.draw.rect(screen, GREY, (WIDTH, 0, SPACE_FOR_EXTRA_INFORMATION, HEIGHT), 0)
         pygame.draw.line(screen, BLACK, (WIDTH, 0), (WIDTH, HEIGHT_DISPLAY), WIDTH_OF_BOUNDARY)
+        level.draw()
+
+        #record
+        text_record = pygame.font.SysFont("Verdana", 15).render(f"Record: {record}", True, BLACK)
+        text_record_rect = text_record.get_rect(topleft=(WIDTH+SPACE_FOR_EXTRA_INFORMATION//12, HEIGHT//15 + 25 + 25))
+        screen.blit(text_record, text_record_rect)  
 
         #conditional statement to start end game scene
         if snake.check_boundary() or snake.check_collisions():
@@ -109,6 +121,11 @@ def game():
             restart.draw()
             if level.score > record:
                 record = level.score
+                with open("table_of_records.csv", "w", newline="") as f:
+                    head = ["Record"]
+                    writer = csv.DictWriter(f, fieldnames=head)
+                    writer.writeheader()
+                    writer.writerow({"Record":record})
 
         #conditional statement to play looser's song
         if end_of_the_game and not music_end_of_the_game:

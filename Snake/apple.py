@@ -20,7 +20,7 @@ class Apple:
         while True:
                 new_x = random.choice(range(0+self.size_of_one_square*2, self.WIDTH-self.size_of_one_square*2, self.size_of_one_square))
                 new_y = random.choice(range(0+self.size_of_one_square*2, self.HEIGHT-self.size_of_one_square*2, self.size_of_one_square))
-                if snake.body[0] != (new_x, new_y):
+                if (new_x, new_y) not in snake.body:
                     self.x = new_x
                     self.y = new_y
                     break

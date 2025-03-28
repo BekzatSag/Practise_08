@@ -21,6 +21,7 @@ HEIGHT_MENU = 100
 
 #init
 pygame.init()
+clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Paint")
 
@@ -87,8 +88,8 @@ colours = pygame.sprite.Group()
 colours.add(white, black, red, blue, yellow, cyan, magneta, green)
 
 #main figures
-C = Circle(screen, WIDTH//2//2 + WIDTH//2//2//2, HEIGHT_MENU//2, 30, 5)
-R = Rectangle(screen, WIDTH//2//2//2 - WIDTH//2//5//2, HEIGHT_MENU//2 - (HEIGHT_MENU-40)//2, WIDTH//2//5, HEIGHT_MENU-40, 5)
+C = Circle(screen, 2*WIDTH//2//4 - WIDTH//2//4//2, HEIGHT_MENU//2, 30, 5)
+R = Rectangle(screen, WIDTH//2//2//4 - WIDTH//2//5//2, HEIGHT_MENU//2 - (HEIGHT_MENU-40)//2, WIDTH//2//5, HEIGHT_MENU-40, 5)
 Eraser = Rectangle(screen, WIDTH//2+300, HEIGHT_MENU//2-29, 50, 60, 5)
 
 #all rectangles variables
@@ -98,7 +99,6 @@ temp_rect = (0, 0, 0, 0, 0, 0)
 
 #erasers variables
 eraser_is_clicked = False
-points_of_eraser = []
 
 #circles variables
 circle_is_clicked = False
@@ -112,7 +112,6 @@ current_colour = BLACK
 
 while True:
     screen.fill(WHITE)
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -135,7 +134,10 @@ while True:
             if circle_is_clicked: circle_is_clicked = False
             eraser_is_clicked = not eraser_is_clicked
 
-
+        if not rectangle_is_clicked and not circle_is_clicked and not eraser_is_clicked:
+            if event.type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0]:
+                if (event.pos[0] < WIDTH and event.pos[0] > 0) and (event.pos[1] > HEIGHT_MENU+2.5+10 and event.pos[1] < HEIGHT):
+                    figures.append(("b", current_colour, event.pos[0], event.pos[1]))
 
         #all steps to draw rectangle
         if rectangle_is_clicked:
@@ -204,8 +206,9 @@ while True:
     #boundaries
     pygame.draw.line(screen, BLACK, (0, HEIGHT_MENU), (WIDTH, HEIGHT_MENU), 5)  
     pygame.draw.line(screen, BLACK, (WIDTH//2, 0), (WIDTH//2, HEIGHT_MENU), 5)
-    pygame.draw.line(screen, BLACK, (WIDTH//2//2, 0), (WIDTH//2//2, HEIGHT_MENU), 5)
-    pygame.draw.line(screen, BLACK, (WIDTH//2+200, 0), (WIDTH//2+200, HEIGHT_MENU), 5)
+    pygame.draw.line(screen, BLACK, (WIDTH//2//4, 0), (WIDTH//2//4, HEIGHT_MENU), 5)
+    pygame.draw.line(screen, BLACK, (2*WIDTH//2//4, 0), (2*WIDTH//2//4, HEIGHT_MENU), 5)
+    pygame.draw.line(screen, BLACK, (WIDTH//4+200, 0), (WIDTH//4+200, HEIGHT_MENU), 5)
    
 
     #fonts to checking if figure is clicked by user
@@ -235,8 +238,8 @@ while True:
             pygame.draw.circle(screen, i[4], (i[1], i[2]), i[3])
         if i[0] == "e":
             pygame.draw.circle(screen, i[3], (i[1], i[2]), 10)
-
-
+        if i[0]=="b":
+            pygame.draw.circle(screen, i[1], (i[2], i[3]), 10)
     #this part to draw temporary figures (when mouse is pressed)
     if drawing_rectangle:
         pygame.draw.rect(screen, temp_rect[4], (temp_rect[0], temp_rect[1], temp_rect[2], temp_rect[3]))
