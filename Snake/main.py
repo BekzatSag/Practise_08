@@ -58,7 +58,7 @@ def game():
     global record #i put this to put the final result in global variable
 
     #speed
-    speed_of_the_game = 10
+    speed_of_the_game = 12
     speed = SIZE_OF_SQUARE
 
 
@@ -117,6 +117,9 @@ def game():
         #conditional statement to start end game scene
         if snake.check_boundary() or snake.check_collisions():
             end_of_the_game = True
+            if not music_end_of_the_game: 
+                pygame.mixer.music.stop()
+                pygame.time.delay(900)
             end_scene.draw()
             restart.draw()
             if level.score > record:
@@ -129,7 +132,6 @@ def game():
 
         #conditional statement to play looser's song
         if end_of_the_game and not music_end_of_the_game:
-            pygame.mixer.music.stop()
             pygame.mixer.music.load("GameOver.mp3")
             pygame.mixer.music.play()
             music_end_of_the_game = True

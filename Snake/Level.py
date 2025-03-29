@@ -29,5 +29,5 @@ class Level:
         if self.score%4==0: 
             self.lvl +=1
             self.text_level = f"{self.lvl} Level"
-            self.speed_of_the_game+=1
+            self.speed_of_the_game+=2
         return self.speed_of_the_game
