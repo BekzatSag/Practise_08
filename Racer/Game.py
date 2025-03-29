@@ -82,16 +82,20 @@ class Player(pygame.sprite.Sprite):
                   
 
 class Coin(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, enemy):
         super().__init__()
         self.image_0 = pygame.image.load("gold-token-icon-cartoon-style-vector-removebg-preview.png")
         self.image = pygame.transform.scale(self.image_0, (40, 40))
         self.coordinates = (random.randint(40, SCREEN_WIDTH-40), 0)
-        self.rect = self.image.get_rect(center = self.coordinates)
+        self.enemy = enemy
+        self.respawn()
 
     def respawn(self):
-        self.coordinates = (random.randint(40, SCREEN_WIDTH-40), 0)
-        self.rect = self.image.get_rect(center = self.coordinates)
+        while True:
+            self.coordinates = (random.randint(40, SCREEN_WIDTH-40), 0)
+            self.rect = self.image.get_rect(center = self.coordinates)
+            if self.coordinates!=self.enemy.rect.center:
+                break
     def move(self):
         self.rect.move_ip(0, 5) 
         if self.rect.bottom > 600:
@@ -128,7 +132,7 @@ def game():
     #Sprites        
     P1 = Player()
     E1 = Enemy()
-    C = Coin()
+    C = Coin(E1)
 
     #Sprites Groups
     enemies = pygame.sprite.Group()
